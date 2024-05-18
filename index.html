@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product List</title>
+    <style>
+        .product {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+        }
+        .product img {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product List</h1>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" onchange="filterProducts()">
+        <option value="all">All</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Books">Books</option>
+        <option value="Clothing">Clothing</option>
+    </select>
+    <div id="productList"></div>
+
+    <script>
+        function loadProducts() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'products.xml', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var xml = xhr.responseXML;
+                    displayProducts(xml, 'all');
+                }
+            };
+            xhr.send();
+        }
+
+        function displayProducts(xml, category) {
+            var productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            var products = xml.getElementsByTagName('product');
+            for (var i = 0; i < products.length; i++) {
+                var name = products[i].getElementsByTagName('name')[0].textContent;
+                var productCategory = products[i].getElementsByTagName('category')[0].textContent;
+                var price = products[i].getElementsByTagName('price')[0].textContent;
+                var image = products[i].getElementsByTagName('image')[0].textContent;
+
+                if (category === 'all' || category === productCategory) {
+                    var productDiv = document.createElement('div');
+                    productDiv.className = 'product';
+                    productDiv.innerHTML = `
+                        <img src="${image}" alt="${name}">
+                        <h2>${name}</h2>
+                        <p>Category: ${productCategory}</p>
+                        <p>Price: $${price}</p>
+                    `;
+                    productList.appendChild(productDiv);
+                }
+            }
+        }
+
+        function filterProducts() {
+            var category = document.getElementById('categoryFilter').value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'products.xml', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var xml = xhr.responseXML;
+                    displayProducts(xml, category);
+                }
+            };
+            xhr.send();
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
