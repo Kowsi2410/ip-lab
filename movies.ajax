@@ -1,0 +1,118 @@
+xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<movies>
+    <movie>
+        <title>The Shawshank Redemption</title>
+        <genre>Drama</genre>
+        <year>1994</year>
+        <description>Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.</description>
+    </movie>
+    <movie>
+        <title>The Godfather</title>
+        <genre>Crime</genre>
+        <year>1972</year>
+        <description>The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.</description>
+    </movie>
+    <movie>
+        <title>The Dark Knight</title>
+        <genre>Action</genre>
+        <year>2008</year>
+        <description>When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham.</description>
+    </movie>
+    <movie>
+        <title>Pulp Fiction</title>
+        <genre>Crime</genre>
+        <year>1994</year>
+        <description>The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.</description>
+    </movie>
+    <movie>
+        <title>Inception</title>
+        <genre>Sci-Fi</genre>
+        <year>2010</year>
+        <description>A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.</description>
+    </movie>
+</movies>
+
+
+
+.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Database Search</title>
+    <style>
+        .movie {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Movie Database Search</h1>
+    <label for="searchType">Search by:</label>
+    <select id="searchType" onchange="searchMovies()">
+        <option value="title">Title</option>
+        <option value="genre">Genre</option>
+        <option value="year">Release Year</option>
+    </select>
+    <input type="text" id="searchInput" oninput="searchMovies()" placeholder="Enter search term">
+    <div id="movieList"></div>
+
+    <script>
+        function searchMovies() {
+            var searchType = document.getElementById('searchType').value;
+            var searchInput = document.getElementById('searchInput').value.toLowerCase();
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'movies.xml', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var xml = xhr.responseXML;
+                    displayMovies(xml, searchType, searchInput);
+                }
+            };
+            xhr.send();
+        }
+
+        function displayMovies(xml, searchType, searchInput) {
+            var movieList = document.getElementById('movieList');
+            movieList.innerHTML = '';
+
+            var movies = xml.getElementsByTagName('movie');
+            for (var i = 0; i < movies.length; i++) {
+                var title = movies[i].getElementsByTagName('title')[0].textContent;
+                var genre = movies[i].getElementsByTagName('genre')[0].textContent;
+                var year = movies[i].getElementsByTagName('year')[0].textContent;
+                var description = movies[i].getElementsByTagName('description')[0].textContent;
+
+                var searchField = '';
+                if (searchType === 'title') {
+                    searchField = title.toLowerCase();
+                } else if (searchType === 'genre') {
+                    searchField = genre.toLowerCase();
+                } else if (searchType === 'year') {
+                    searchField = year;
+                }
+
+                if (searchField.includes(searchInput)) {
+                    var movieDiv = document.createElement('div');
+                    movieDiv.className = 'movie';
+                    movieDiv.innerHTML = `
+                        <h2>${title}</h2>
+                        <p><strong>Genre:</strong> ${genre}</p>
+                        <p><strong>Release Year:</strong> ${year}</p>
+                        <p>${description}</p>
+                    `;
+                    movieList.appendChild(movieDiv);
+                }
+            }
+        }
+
+        window.onload = searchMovies;
+    </script>
+</body>
+</html>
