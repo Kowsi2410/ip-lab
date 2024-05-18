@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+    <product>
+        <name>Product 1</name>
+        <category>Electronics</category>
+        <price>299.99</price>
+        <image>https://example.com/images/product1.jpg</image>
+    </product>
+    <product>
+        <name>Product 2</name>
+        <category>Books</category>
+        <price>19.99</price>
+        <image>https://example.com/images/product2.jpg</image>
+    </product>
+    <product>
+        <name>Product 3</name>
+        <category>Electronics</category>
+        <price>499.99</price>
+        <image>https://example.com/images/product3.jpg</image>
+    </product>
+    <product>
+        <name>Product 4</name>
+        <category>Clothing</category>
+        <price>39.99</price>
+        <image>https://example.com/images/product4.jpg</image>
+    </product>
+    <product>
+        <name>Product 5</name>
+        <category>Books</category>
+        <price>9.99</price>
+        <image>https://example.com/images/product5.jpg</image>
+    </product>
+</products>
