@@ -1,0 +1,93 @@
+order.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Order Form</title>
+</head>
+<body>
+    <h1>Product Order Form</h1>
+    <form action="submit_order.php" method="post">
+        <label for="product">Select Product:</label>
+        <select id="product" name="product" required>
+            <option value="Product A">Product A</option>
+            <option value="Product B">Product B</option>
+            <option value="Product C">Product C</option>
+        </select><br><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required><br><br>
+
+        <input type="submit" value="Submit Order">
+    </form>
+</body>
+</html>
+
+
+submit_order.php
+
+<?php
+// Database connection settings
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "product_order_db";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Function to validate quantity using regular expressions
+function validateQuantity($quantity) {
+    $quantityPattern = "/^\d+$/";
+    return preg_match($quantityPattern, $quantity);
+}
+
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $product = $_POST["product"];
+    $quantity = $_POST["quantity"];
+
+    // Validate inputs
+    if (!validateQuantity($quantity)) {
+        echo "<p>Error: Invalid quantity. Quantity must be a positive integer.</p>";
+        exit();
+    }
+
+    // Prepare and bind
+    $stmt = $conn->prepare("INSERT INTO orders (product, quantity) VALUES (?, ?)");
+    $stmt->bind_param("si", $product, $quantity);
+
+    if ($stmt->execute()) {
+        echo "<p>Order submitted successfully.</p>";
+    } else {
+        echo "<p>Error: " . $stmt->error . "</p>";
+    }
+
+    $stmt->close();
+}
+
+$conn->close();
+?>
+
+
+db
+
+-- Create database
+CREATE DATABASE product_order_db;
+
+-- Use the database
+USE product_order_db;
+
+-- Create orders table
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product VARCHAR(50) NOT NULL,
+    quantity INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
