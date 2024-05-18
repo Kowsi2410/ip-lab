@@ -1,0 +1,176 @@
+weather.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<weather>
+    <city name="New York">
+        <forecast>
+            <date>2024-05-18</date>
+            <temperature>18°C</temperature>
+            <humidity>65%</humidity>
+            <description>Sunny</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-19</date>
+            <temperature>20°C</temperature>
+            <humidity>60%</humidity>
+            <description>Partly Cloudy</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-20</date>
+            <temperature>22°C</temperature>
+            <humidity>58%</humidity>
+            <description>Cloudy</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-21</date>
+            <temperature>21°C</temperature>
+            <humidity>62%</humidity>
+            <description>Rain</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-22</date>
+            <temperature>19°C</temperature>
+            <humidity>64%</humidity>
+            <description>Thunderstorms</description>
+        </forecast>
+    </city>
+    <city name="Los Angeles">
+        <forecast>
+            <date>2024-05-18</date>
+            <temperature>25°C</temperature>
+            <humidity>50%</humidity>
+            <description>Sunny</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-19</date>
+            <temperature>27°C</temperature>
+            <humidity>48%</humidity>
+            <description>Sunny</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-20</date>
+            <temperature>28°C</temperature>
+            <humidity>45%</humidity>
+            <description>Sunny</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-21</date>
+            <temperature>26°C</temperature>
+            <humidity>47%</humidity>
+            <description>Partly Cloudy</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-22</date>
+            <temperature>24°C</temperature>
+            <humidity>49%</humidity>
+            <description>Cloudy</description>
+        </forecast>
+    </city>
+    <city name="Chicago">
+        <forecast>
+            <date>2024-05-18</date>
+            <temperature>15°C</temperature>
+            <humidity>70%</humidity>
+            <description>Cloudy</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-19</date>
+            <temperature>17°C</temperature>
+            <humidity>68%</humidity>
+            <description>Partly Cloudy</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-20</date>
+            <temperature>18°C</temperature>
+            <humidity>66%</humidity>
+            <description>Sunny</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-21</date>
+            <temperature>16°C</temperature>
+            <humidity>69%</humidity>
+            <description>Rain</description>
+        </forecast>
+        <forecast>
+            <date>2024-05-22</date>
+            <temperature>14°C</temperature>
+            <humidity>72%</humidity>
+            <description>Thunderstorms</description>
+        </forecast>
+    </city>
+</weather>
+
+
+weather.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>5-Day Weather Forecast</title>
+    <style>
+        .forecast {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <h1>5-Day Weather Forecast</h1>
+    <label for="citySelect">Select City:</label>
+    <select id="citySelect" onchange="fetchWeather()">
+        <option value="New York">New York</option>
+        <option value="Los Angeles">Los Angeles</option>
+        <option value="Chicago">Chicago</option>
+    </select>
+    <div id="weatherForecast"></div>
+
+    <script>
+        function fetchWeather() {
+            var city = document.getElementById('citySelect').value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'weather.xml', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var xml = xhr.responseXML;
+                    displayWeather(xml, city);
+                }
+            };
+            xhr.send();
+        }
+
+        function displayWeather(xml, city) {
+            var weatherForecast = document.getElementById('weatherForecast');
+            weatherForecast.innerHTML = '';
+
+            var cities = xml.getElementsByTagName('city');
+            for (var i = 0; i < cities.length; i++) {
+                if (cities[i].getAttribute('name') === city) {
+                    var forecasts = cities[i].getElementsByTagName('forecast');
+                    for (var j = 0; j < forecasts.length; j++) {
+                        var date = forecasts[j].getElementsByTagName('date')[0].textContent;
+                        var temperature = forecasts[j].getElementsByTagName('temperature')[0].textContent;
+                        var humidity = forecasts[j].getElementsByTagName('humidity')[0].textContent;
+                        var description = forecasts[j].getElementsByTagName('description')[0].textContent;
+
+                        var forecastDiv = document.createElement('div');
+                        forecastDiv.className = 'forecast';
+                        forecastDiv.innerHTML = `
+                            <h2>${date}</h2>
+                            <p>Temperature: ${temperature}</p>
+                            <p>Humidity: ${humidity}</p>
+                            <p>Description: ${description}</p>
+                        `;
+                        weatherForecast.appendChild(forecastDiv);
+                    }
+                    break;
+                }
+            }
+        }
+
+        window.onload = fetchWeather;
+    </script>
+</body>
+</html>
